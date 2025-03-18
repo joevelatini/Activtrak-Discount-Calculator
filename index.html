@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>ActivTrak Discount Calculator</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ActivTrak Discount Calculator</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            line-height: 1.5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 20px;
             background-color: #f5f5f5;
         }
         
@@ -18,713 +15,378 @@
             max-width: 1200px;
             margin: 0 auto;
             background-color: white;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 24px;
         }
         
         h1 {
-            font-size: 24px;
-            color: #1a56db;
+            color: #0056b3;
             margin-top: 0;
-            margin-bottom: 24px;
-        }
-        
-        .settings-panel {
-            background-color: #f9fafb;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .settings-panel h2 {
-            font-size: 18px;
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
-        
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            align-items: flex-end;
-        }
-        
-        .control-group {
-            margin-bottom: 8px;
-        }
-        
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-        
-        input, select {
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        input[type="number"] {
-            width: 100px;
-        }
-        
-        .number-input {
-            text-align: right;
-            width: 100px;
-            -moz-appearance: textfield; /* Firefox */
-        }
-        
-        .number-input::-webkit-inner-spin-button, 
-        .number-input::-webkit-outer-spin-button { 
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        
-        button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        
-        .btn-primary {
-            background-color: #1a56db;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #1e429f;
-        }
-        
-        .btn-secondary {
-            background-color: #e5e7eb;
-            color: #1f2937;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #d1d5db;
-        }
-        
-        .btn-success {
-            background-color: #10b981;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #059669;
-        }
-        
-        .btn-danger {
-            background-color: #ef4444;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-            margin-bottom: 24px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            margin-bottom: 20px;
         }
         
         th, td {
             padding: 10px;
-            border-bottom: 1px solid #e5e7eb;
+            border: 1px solid #ddd;
             text-align: left;
         }
         
         th {
-            background-color: #f9fafb;
-            font-weight: 600;
-        }
-        
-        tr:hover {
-            background-color: #f9fafb;
+            background-color: #f2f2f2;
+            font-weight: bold;
         }
         
         .text-right {
             text-align: right;
         }
         
-        .text-center {
-            text-align: center;
+        input[type="text"], 
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            text-align: right;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         
-        tfoot {
-            font-weight: 600;
-            background-color: #f9fafb;
+        input.product-name {
+            width: 150px;
+            text-align: left;
         }
         
-        .summary-panel {
-            background-color: #eff6ff;
+        button {
+            padding: 8px 12px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #003d82;
+        }
+        
+        button.remove {
+            background-color: #dc3545;
+        }
+        
+        button.remove:hover {
+            background-color: #bd2130;
+        }
+        
+        button.add {
+            background-color: #28a745;
+        }
+        
+        button.add:hover {
+            background-color: #218838;
+        }
+        
+        .settings {
+            background-color: #f8f9fa;
+            padding: 15px;
             border-radius: 8px;
-            padding: 16px;
-        }
-        
-        .summary-header {
+            margin-bottom: 20px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
             flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
         }
         
-        .summary-header h2 {
-            font-size: 18px;
-            margin: 0;
+        .form-group {
+            margin-bottom: 0;
         }
         
-        .summary-grid {
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .summary {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            margin-bottom: 16px;
+            gap: 20px;
+            margin-top: 20px;
+            background-color: #e9f0f8;
+            padding: 15px;
+            border-radius: 8px;
         }
         
-        .summary-card {
+        .summary-box {
             background-color: white;
+            padding: 15px;
             border-radius: 6px;
-            padding: 12px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .summary-label {
             font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 4px;
+            color: #6c757d;
+            margin-bottom: 5px;
         }
         
         .summary-value {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: bold;
         }
         
         .summary-input {
             width: 100%;
-            padding: 4px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 20px;
-            font-weight: 700;
+            padding: 8px;
+            font-size: 18px;
+            font-weight: bold;
             text-align: right;
-            -moz-appearance: textfield; /* Firefox */
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         
-        .summary-input::-webkit-inner-spin-button, 
-        .summary-input::-webkit-outer-spin-button { 
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        
-        .summary-subtext {
+        .footer {
+            margin-top: 20px;
+            color: #6c757d;
             font-size: 12px;
-            color: #6b7280;
-            margin-top: 4px;
+            text-align: center;
         }
         
-        .highlight-section {
-            background-color: #dbeafe;
-            border-radius: 6px;
-            padding: 12px;
+        tfoot {
+            font-weight: bold;
+            background-color: #f2f2f2;
         }
         
-        .editable-total {
-            width: 80px;
-            text-align: right;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 4px;
-            font-weight: 600;
-            -moz-appearance: textfield; /* Firefox */
-        }
-        
-        .editable-total::-webkit-inner-spin-button, 
-        .editable-total::-webkit-outer-spin-button { 
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            input, select {
-                width: 100%;
-            }
-            
-            input[type="number"] {
-                width: 100%;
-            }
+        tfoot input {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>ActivTrak Discount Allocation Calculator</h1>
+        <h1>ActivTrak Discount Calculator</h1>
         
-        <div class="settings-panel">
-            <h2>Target Discount Settings</h2>
-            <div class="controls">
-                <div class="control-group">
-                    <label for="target-discount">Target Overall Discount (%)</label>
-                    <input
-                        type="number"
-                        id="target-discount"
-                        min="0"
-                        max="99.99"
-                        step="0.01"
-                        value="30"
-                    />
-                </div>
-                
-                <div class="control-group">
-                    <label for="distribution-method">Distribution Method</label>
-                    <select id="distribution-method">
-                        <option value="proportional">Proportional (Maintain Ratios)</option>
-                        <option value="priority">Priority (Highest Value First)</option>
-                        <option value="equal">Equal (Same % Across All)</option>
-                    </select>
-                </div>
-                
-                <button id="apply-discount" class="btn-primary">
-                    Apply Target Discount
-                </button>
-                
-                <button id="reset-discount" class="btn-secondary">
-                    Reset
-                </button>
-                
-                <button id="add-product" class="btn-success">
-                    Add Product
-                </button>
+        <div class="settings">
+            <div class="form-group">
+                <label for="target-discount">Target Discount (%)</label>
+                <input type="number" id="target-discount" min="0" max="99.99" step="0.01" value="30">
+            </div>
+            
+            <div class="form-group">
+                <label for="distribution-method">Distribution Method</label>
+                <select id="distribution-method">
+                    <option value="proportional">Proportional</option>
+                    <option value="priority">Priority (Highest First)</option>
+                    <option value="equal">Equal</option>
+                </select>
+            </div>
+            
+            <button id="apply-target-discount">Apply Target Discount</button>
+            <button id="reset" class="remove">Reset</button>
+            <button id="add-product" class="add">Add Product</button>
+        </div>
+        
+        <table id="products-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="text-right">Quantity</th>
+                    <th class="text-right">List Price ($)</th>
+                    <th class="text-right">Total List Value ($)</th>
+                    <th class="text-right">Discount (%)</th>
+                    <th class="text-right">Sales Price ($)</th>
+                    <th class="text-right">Total Sales Value ($)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="product-rows">
+                <!-- Product rows will be added here by JavaScript -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Totals</td>
+                    <td class="text-right"><span id="list-price-sum">0.00</span></td>
+                    <td class="text-right"><span id="total-list-value">0.00</span></td>
+                    <td class="text-right"><span id="overall-discount">0.00%</span></td>
+                    <td class="text-right">
+                        <input type="number" id="sales-price-sum" min="0" step="0.01" value="0.00">
+                    </td>
+                    <td class="text-right"><span id="total-sales-value">0.00</span></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="settings">
+            <div class="form-group">
+                <label for="contract-months">Contract Length (Months)</label>
+                <input type="number" id="contract-months" min="1" max="60" value="12">
             </div>
         </div>
         
-        <div class="table-container">
-            <table id="products-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th class="text-right">Quantity</th>
-                        <th class="text-right">List Price ($)</th>
-                        <th class="text-right">Total List Value ($)</th>
-                        <th class="text-right">Discount (%)</th>
-                        <th class="text-right">Sales Price ($)</th>
-                        <th class="text-right">Total Sales Value ($)</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="products-body">
-                    <!-- Product rows will be added here -->
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="2">Totals</td>
-                        <td class="text-right">
-                            <input
-                                type="number"
-                                id="total-list-price"
-                                class="editable-total"
-                                min="0"
-                                step="0.01"
-                            />
-                        </td>
-                        <td class="text-right" id="total-list-value">0.00</td>
-                        <td class="text-right" colspan="2" id="overall-discount">0.00%</td>
-                        <td class="text-right" id="total-sales-value">0.00</td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+        <div class="summary">
+            <div class="summary-box">
+                <div class="summary-label">Monthly List Value</div>
+                <div class="summary-value" id="monthly-list-value">$0.00</div>
+            </div>
+            <div class="summary-box">
+                <div class="summary-label">Monthly Sales Value</div>
+                <div class="summary-value" id="monthly-sales-value">$0.00</div>
+            </div>
+            <div class="summary-box">
+                <div class="summary-label">Monthly Savings</div>
+                <div class="summary-value" id="monthly-savings">$0.00</div>
+                <div id="monthly-discount">0.00% discount</div>
+            </div>
+            <div class="summary-box">
+                <div class="summary-label">Total Contract List Value</div>
+                <div class="summary-value" id="contract-list-value">$0.00</div>
+            </div>
+            <div class="summary-box">
+                <div class="summary-label">Total Contract Sales Value</div>
+                <input type="number" id="contract-sales-value" class="summary-input" min="0" step="0.01" value="0.00">
+            </div>
+            <div class="summary-box">
+                <div class="summary-label">Total Contract Savings</div>
+                <div class="summary-value" id="contract-savings">$0.00</div>
+            </div>
         </div>
         
-        <div class="summary-panel">
-            <div class="summary-header">
-                <h2>Contract Summary</h2>
-                <div class="control-group">
-                    <label for="contract-months">Contract Term (Months):</label>
-                    <input
-                        type="number"
-                        id="contract-months"
-                        min="1"
-                        max="60"
-                        value="12"
-                    />
-                </div>
-            </div>
-            
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-label">Monthly List Value</div>
-                    <div class="summary-value" id="monthly-list-value">$0.00</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-label">Monthly Sales Value</div>
-                    <div class="summary-value" id="monthly-sales-value">$0.00</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-label">Monthly Savings</div>
-                    <div class="summary-value" id="monthly-savings">$0.00</div>
-                    <div class="summary-subtext" id="monthly-discount">0.00% discount</div>
-                </div>
-            </div>
-            
-            <div class="highlight-section">
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <div class="summary-label">Total Contract List Value</div>
-                        <div class="summary-value" id="contract-list-value">$0.00</div>
-                        <div class="summary-subtext" id="contract-months-text">12 months</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-label">Total Contract Sales Value</div>
-                        <div class="summary-value">
-                            <input
-                                type="number"
-                                id="contract-sales-value"
-                                class="summary-input"
-                                min="0"
-                                step="0.01"
-                                value="0.00"
-                            />
-                        </div>
-                        <div class="summary-subtext" id="contract-months-sales-text">12 months</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-label">Total Contract Savings</div>
-                        <div class="summary-value" id="contract-savings">$0.00</div>
-                        <div class="summary-subtext" id="contract-months-savings-text">12 months</div>
-                    </div>
-                </div>
-            </div>
+        <div class="footer">
+            Created for ActivTrak Customer Success
         </div>
     </div>
 
     <script>
-        // Product class to handle individual product calculations
-        class Product {
-            constructor(id, name, quantity, listPrice, discount) {
-                this.id = id;
-                this.name = name;
-                this.quantity = quantity;
-                this.listPrice = listPrice;
-                this.discount = discount;
-                this.salesPrice = this.calculateSalesPrice();
-            }
+        // Global variables to store product data and settings
+        let products = [];
+        let nextId = 1;
+        let contractMonths = 12;
+        let targetDiscount = 30;
+
+        // Initialize the calculator
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add initial products
+            addProduct('ActivTrak Professional', 160, 19.00, 23.95);
+            addProduct('Premier Support', 160, 1.50, 50.00);
+            addProduct('Screen Details', 160, 2.00, 50.00);
             
-            calculateSalesPrice() {
-                return parseFloat((this.listPrice * (1 - this.discount / 100)).toFixed(2));
-            }
+            // Set up event listeners
+            document.getElementById('add-product').addEventListener('click', function() {
+                addProduct('New Product', 1, 0.00, 0.00);
+            });
             
-            calculateTotalListValue() {
-                return parseFloat((this.quantity * this.listPrice).toFixed(2));
-            }
+            document.getElementById('reset').addEventListener('click', resetProducts);
             
-            calculateTotalSalesValue() {
-                return parseFloat((this.quantity * this.salesPrice).toFixed(2));
-            }
+            document.getElementById('apply-target-discount').addEventListener('click', applyTargetDiscount);
             
-            updateDiscount(discount) {
-                this.discount = discount;
-                this.salesPrice = this.calculateSalesPrice();
-            }
+            document.getElementById('contract-months').addEventListener('change', function() {
+                contractMonths = parseInt(this.value) || 1;
+                updateSummary();
+            });
             
-            updateSalesPrice(salesPrice) {
-                this.salesPrice = salesPrice;
-                if (this.listPrice > 0) {
-                    this.discount = parseFloat((((this.listPrice - this.salesPrice) / this.listPrice) * 100).toFixed(2));
-                    // Cap discount at 99.99%
-                    this.discount = Math.min(99.99, this.discount);
-                } else {
-                    this.discount = 0;
-                }
-            }
+            document.getElementById('target-discount').addEventListener('change', function() {
+                targetDiscount = parseFloat(this.value) || 0;
+            });
             
-            updateListPrice(listPrice) {
-                this.listPrice = listPrice;
-                this.salesPrice = this.calculateSalesPrice();
-            }
+            document.getElementById('sales-price-sum').addEventListener('change', function() {
+                const newSum = parseFloat(this.value) || 0;
+                adjustSalesPrices(newSum);
+            });
             
-            updateQuantity(quantity) {
-                this.quantity = quantity;
-            }
+            document.getElementById('contract-sales-value').addEventListener('change', function() {
+                const newValue = parseFloat(this.value) || 0;
+                adjustContractSalesValue(newValue);
+            });
+        });
+
+        // Function to add a new product
+        function addProduct(name, quantity, listPrice, discount) {
+            const product = {
+                id: nextId++,
+                name: name,
+                quantity: quantity,
+                listPrice: listPrice,
+                discount: discount,
+                salesPrice: calculateSalesPrice(listPrice, discount)
+            };
+            
+            products.push(product);
+            renderProducts();
         }
-        
-        // Calculator class to manage the entire calculator
-        class DiscountCalculator {
-            constructor() {
-                this.products = [];
-                this.nextId = 1;
-                this.months = 12;
-                this.targetDiscount = 30;
-                this.distributionMethod = 'proportional';
-                
-                this.initEventListeners();
-                this.loadInitialProducts();
-                this.render();
-            }
+
+        // Function to remove a product
+        function removeProduct(id) {
+            products = products.filter(p => p.id !== id);
+            renderProducts();
+        }
+
+        // Function to calculate sales price based on list price and discount
+        function calculateSalesPrice(listPrice, discount) {
+            return listPrice * (1 - (discount / 100));
+        }
+
+        // Function to update a product property
+        function updateProduct(id, property, value) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
             
-            initEventListeners() {
-                // Settings panel buttons
-                document.getElementById('apply-discount').addEventListener('click', () => this.applyTargetDiscount());
-                document.getElementById('reset-discount').addEventListener('click', () => this.resetToInitial());
-                document.getElementById('add-product').addEventListener('click', () => this.addProduct());
-                
-                // Target discount and distribution method
-                document.getElementById('target-discount').addEventListener('change', (e) => {
-                    this.targetDiscount = parseFloat(e.target.value) || 0;
-                });
-                document.getElementById('target-discount').className = 'number-input';
-                
-                document.getElementById('distribution-method').addEventListener('change', (e) => {
-                    this.distributionMethod = e.target.value;
-                });
-                
-                // Contract months
-                document.getElementById('contract-months').addEventListener('change', (e) => {
-                    this.months = parseInt(e.target.value) || 1;
-                    this.render();
-                });
-                document.getElementById('contract-months').className = 'number-input';
-                
-                // Total sales price input
-                document.getElementById('total-sales-price-sum').addEventListener('change', (e) => {
-                    const newTotalSalesPrice = parseFloat(e.target.value);
-                    if (!isNaN(newTotalSalesPrice)) {
-                        this.adjustTotalSalesPrice(newTotalSalesPrice);
-                    }
-                });
-                
-                // Make sales price total fully editable
-                const totalSalesPriceInput = document.getElementById('total-sales-price-sum');
-                totalSalesPriceInput.addEventListener('keydown', function(e) {
-                    e.stopPropagation();
-                });
-                
-                // Contract sales value input
-                document.getElementById('contract-sales-value').addEventListener('blur', (e) => {
-                    const newTotalSalesValue = parseFloat(e.target.value);
-                    if (!isNaN(newTotalSalesValue)) {
-                        this.adjustToTargetSalesValue(newTotalSalesValue);
-                    }
-                });
-                
-                // Make sure the contract sales value input allows full editing
-                const contractSalesInput = document.getElementById('contract-sales-value');
-                contractSalesInput.className = 'summary-input number-input';
-                contractSalesInput.addEventListener('keydown', (e) => {
-                    // Allow the input to be fully editable without immediate recalculation
-                    e.stopPropagation();
-                });
-            }
+            product[property] = value;
             
-            loadInitialProducts() {
-                // Initial products from the screenshot
-                this.addProduct('ActivTrak Professional', 160, 19.00, 23.95);
-                this.addProduct('Premier Support', 160, 1.50, 50.00);
-                this.addProduct('Screen Details', 160, 2.00, 50.00);
-            }
-            
-            addProduct(name = 'New Product', quantity = 1, listPrice = 0.00, discount = 0.00) {
-                const product = new Product(this.nextId++, name, quantity, listPrice, discount);
-                this.products.push(product);
-                this.render();
-                return product;
-            }
-            
-            removeProduct(id) {
-                this.products = this.products.filter(product => product.id !== id);
-                this.render();
-            }
-            
-            calculateTotals() {
-                let totalListValue = 0;
-                let totalSalesValue = 0;
-                
-                this.products.forEach(product => {
-                    totalListValue += product.calculateTotalListValue();
-                    totalSalesValue += product.calculateTotalSalesValue();
-                });
-                
-                const overallDiscount = totalListValue > 0 
-                    ? ((totalListValue - totalSalesValue) / totalListValue) * 100 
-                    : 0;
-                
-                return {
-                    totalListValue,
-                    totalSalesValue,
-                    overallDiscount
-                };
-            }
-            
-            applyTargetDiscount() {
-                switch (this.distributionMethod) {
-                    case 'proportional':
-                        this.applyProportionalDiscount();
-                        break;
-                    case 'priority':
-                        this.applyPriorityDiscount();
-                        break;
-                    case 'equal':
-                        this.applyEqualDiscount();
-                        break;
+            // Update related properties
+            if (property === 'discount') {
+                product.salesPrice = calculateSalesPrice(product.listPrice, product.discount);
+            } else if (property === 'salesPrice') {
+                if (product.listPrice > 0) {
+                    product.discount = ((product.listPrice - product.salesPrice) / product.listPrice) * 100;
+                    // Cap discount at 99.99%
+                    product.discount = Math.min(99.99, product.discount);
+                } else {
+                    product.discount = 0;
                 }
-                
-                this.render();
+            } else if (property === 'listPrice') {
+                product.salesPrice = calculateSalesPrice(product.listPrice, product.discount);
             }
             
-            applyProportionalDiscount() {
-                const { totalListValue, totalSalesValue, overallDiscount } = this.calculateTotals();
-                
-                if (totalListValue === 0) return;
-                
-                // If current discount is 0, apply equal discount
-                if (overallDiscount === 0) {
-                    this.applyEqualDiscount();
-                    return;
-                }
-                
-                const adjustmentFactor = this.targetDiscount / overallDiscount;
-                
-                this.products.forEach(product => {
-                    let newDiscount = product.discount * adjustmentFactor;
-                    // Cap at 99.99%
-                    newDiscount = Math.min(99.99, newDiscount);
-                    product.updateDiscount(newDiscount);
-                });
-            }
+            renderProducts();
+        }
+
+        // Function to render all products
+        function renderProducts() {
+            const tbody = document.getElementById('product-rows');
+            tbody.innerHTML = '';
             
-            applyPriorityDiscount() {
-                const { totalListValue, totalSalesValue } = this.calculateTotals();
-                
-                if (totalListValue === 0) return;
-                
-                // Sort products by price (highest to lowest)
-                const sortedProducts = [...this.products].sort((a, b) => 
-                    (b.listPrice * b.quantity) - (a.listPrice * a.quantity)
-                );
-                
-                const targetValue = totalListValue * (1 - this.targetDiscount / 100);
-                let currentValue = totalSalesValue;
-                
-                for (const product of sortedProducts) {
-                    if (Math.abs(currentValue - targetValue) < 0.01) break;
-                    
-                    const productListValue = product.calculateTotalListValue();
-                    
-                    if (currentValue > targetValue) {
-                        // Need to increase discount
-                        const additionalDiscountNeeded = (currentValue - targetValue) / productListValue * 100;
-                        const newDiscount = Math.min(99.99, product.discount + additionalDiscountNeeded);
-                        const originalSalesValue = product.calculateTotalSalesValue();
-                        product.updateDiscount(newDiscount);
-                        const newSalesValue = product.calculateTotalSalesValue();
-                        currentValue = currentValue - (originalSalesValue - newSalesValue);
-                    } else {
-                        // Need to decrease discount
-                        const discountReduction = (targetValue - currentValue) / productListValue * 100;
-                        const newDiscount = Math.max(0, product.discount - discountReduction);
-                        const originalSalesValue = product.calculateTotalSalesValue();
-                        product.updateDiscount(newDiscount);
-                        const newSalesValue = product.calculateTotalSalesValue();
-                        currentValue = currentValue + (newSalesValue - originalSalesValue);
-                    }
-                }
-            }
-            
-            applyEqualDiscount() {
-                this.products.forEach(product => {
-                    product.updateDiscount(this.targetDiscount);
-                });
-            }
-            
-            // Adjust the sales prices based on a target sum
-            adjustTotalSalesPrice(targetTotalSalesPrice) {
-                // Calculate current sum of sales prices
-                let sumOfSalesPrices = 0;
-                this.products.forEach(product => {
-                    sumOfSalesPrices += product.salesPrice;
-                });
-                
-                if (sumOfSalesPrices === 0) return;
-                
-                const adjustmentFactor = targetTotalSalesPrice / sumOfSalesPrices;
-                
-                this.products.forEach(product => {
-                    const newSalesPrice = product.salesPrice * adjustmentFactor;
-                    product.updateSalesPrice(newSalesPrice);
-                });
-                
-                this.render();
-            }
-            
-            adjustToTargetSalesValue(targetContractSalesValue) {
-                const { totalSalesValue } = this.calculateTotals();
-                
-                if (totalSalesValue === 0) return;
-                
-                const targetMonthlySalesValue = targetContractSalesValue / this.months;
-                const adjustmentFactor = targetMonthlySalesValue / totalSalesValue;
-                
-                this.products.forEach(product => {
-                    const newSalesPrice = product.salesPrice * adjustmentFactor;
-                    product.updateSalesPrice(newSalesPrice);
-                });
-                
-                this.render();
-            }
-            
-            resetToInitial() {
-                this.products = [];
-                this.nextId = 1;
-                this.loadInitialProducts();
-            }
-            
-            renderProductRow(product) {
+            products.forEach(product => {
                 const row = document.createElement('tr');
                 
-                // Product name cell
+                // Product name
                 const nameCell = document.createElement('td');
                 const nameInput = document.createElement('input');
                 nameInput.type = 'text';
                 nameInput.value = product.name;
-                nameInput.className = 'text-input';
-                nameInput.addEventListener('input', (e) => {
-                    product.name = e.target.value;
+                nameInput.className = 'product-name';
+                nameInput.addEventListener('change', function() {
+                    updateProduct(product.id, 'name', this.value);
                 });
                 nameCell.appendChild(nameInput);
                 
-                // Quantity cell
+                // Quantity
                 const quantityCell = document.createElement('td');
                 quantityCell.className = 'text-right';
                 const quantityInput = document.createElement('input');
                 quantityInput.type = 'number';
                 quantityInput.value = product.quantity;
                 quantityInput.min = '1';
-                quantityInput.className = 'number-input';
-                quantityInput.addEventListener('change', (e) => {
-                    const value = parseInt(e.target.value) || 0;
-                    product.updateQuantity(value);
-                    this.render();
+                quantityInput.addEventListener('change', function() {
+                    updateProduct(product.id, 'quantity', parseInt(this.value) || 1);
                 });
                 quantityCell.appendChild(quantityInput);
                 
-                // List price cell
+                // List price
                 const listPriceCell = document.createElement('td');
                 listPriceCell.className = 'text-right';
                 const listPriceInput = document.createElement('input');
@@ -732,20 +394,17 @@
                 listPriceInput.value = product.listPrice.toFixed(2);
                 listPriceInput.min = '0';
                 listPriceInput.step = '0.01';
-                listPriceInput.className = 'number-input';
-                listPriceInput.addEventListener('change', (e) => {
-                    const value = parseFloat(e.target.value) || 0;
-                    product.updateListPrice(value);
-                    this.render();
+                listPriceInput.addEventListener('change', function() {
+                    updateProduct(product.id, 'listPrice', parseFloat(this.value) || 0);
                 });
                 listPriceCell.appendChild(listPriceInput);
                 
-                // Total list value cell
-                const totalListValueCell = document.createElement('td');
-                totalListValueCell.className = 'text-right';
-                totalListValueCell.textContent = product.calculateTotalListValue().toFixed(2);
+                // Total list value
+                const totalListCell = document.createElement('td');
+                totalListCell.className = 'text-right';
+                totalListCell.textContent = (product.quantity * product.listPrice).toFixed(2);
                 
-                // Discount cell
+                // Discount
                 const discountCell = document.createElement('td');
                 discountCell.className = 'text-right';
                 const discountInput = document.createElement('input');
@@ -754,15 +413,12 @@
                 discountInput.min = '0';
                 discountInput.max = '99.99';
                 discountInput.step = '0.01';
-                discountInput.className = 'number-input';
-                discountInput.addEventListener('change', (e) => {
-                    const value = parseFloat(e.target.value) || 0;
-                    product.updateDiscount(value);
-                    this.render();
+                discountInput.addEventListener('change', function() {
+                    updateProduct(product.id, 'discount', parseFloat(this.value) || 0);
                 });
                 discountCell.appendChild(discountInput);
                 
-                // Sales price cell
+                // Sales price
                 const salesPriceCell = document.createElement('td');
                 salesPriceCell.className = 'text-right';
                 const salesPriceInput = document.createElement('input');
@@ -770,91 +426,228 @@
                 salesPriceInput.value = product.salesPrice.toFixed(2);
                 salesPriceInput.min = '0';
                 salesPriceInput.step = '0.01';
-                salesPriceInput.className = 'number-input';
-                salesPriceInput.addEventListener('change', (e) => {
-                    const value = parseFloat(e.target.value) || 0;
-                    product.updateSalesPrice(value);
-                    this.render();
+                salesPriceInput.addEventListener('change', function() {
+                    updateProduct(product.id, 'salesPrice', parseFloat(this.value) || 0);
                 });
                 salesPriceCell.appendChild(salesPriceInput);
                 
-                // Total sales value cell
-                const totalSalesValueCell = document.createElement('td');
-                totalSalesValueCell.className = 'text-right';
-                totalSalesValueCell.textContent = product.calculateTotalSalesValue().toFixed(2);
+                // Total sales value
+                const totalSalesCell = document.createElement('td');
+                totalSalesCell.className = 'text-right';
+                totalSalesCell.textContent = (product.quantity * product.salesPrice).toFixed(2);
                 
-                // Actions cell
+                // Actions
                 const actionsCell = document.createElement('td');
-                actionsCell.className = 'text-center';
                 const removeButton = document.createElement('button');
                 removeButton.textContent = 'Remove';
-                removeButton.className = 'btn-danger';
-                removeButton.addEventListener('click', () => this.removeProduct(product.id));
+                removeButton.className = 'remove';
+                removeButton.addEventListener('click', function() {
+                    removeProduct(product.id);
+                });
                 actionsCell.appendChild(removeButton);
                 
-                // Add all cells to the row
+                // Add cells to row
                 row.appendChild(nameCell);
                 row.appendChild(quantityCell);
                 row.appendChild(listPriceCell);
-                row.appendChild(totalListValueCell);
+                row.appendChild(totalListCell);
                 row.appendChild(discountCell);
                 row.appendChild(salesPriceCell);
-                row.appendChild(totalSalesValueCell);
+                row.appendChild(totalSalesCell);
                 row.appendChild(actionsCell);
                 
-                return row;
-            }
+                // Add row to table
+                tbody.appendChild(row);
+            });
             
-            render() {
-                // Clear existing products
-                const tbody = document.getElementById('products-body');
-                tbody.innerHTML = '';
-                
-                // Add each product row
-                this.products.forEach(product => {
-                    tbody.appendChild(this.renderProductRow(product));
-                });
-                
-                // Calculate and update totals
-                const { totalListValue, totalSalesValue, overallDiscount } = this.calculateTotals();
-                
-                // Calculate the sum of List Price($) and Sales Price($) fields
-                let sumOfListPrices = 0;
-                let sumOfSalesPrices = 0;
-                this.products.forEach(product => {
-                    sumOfListPrices += product.listPrice;
-                    sumOfSalesPrices += product.salesPrice;
-                });
-                
-                // Update totals in the table footer
-                document.getElementById('total-list-price-sum').textContent = sumOfListPrices.toFixed(2);
-                document.getElementById('total-sales-price-sum').value = sumOfSalesPrices.toFixed(2);
-                document.getElementById('total-list-value').textContent = totalListValue.toFixed(2);
-                document.getElementById('overall-discount').textContent = overallDiscount.toFixed(2) + '%';
-                document.getElementById('total-sales-value').textContent = totalSalesValue.toFixed(2);
-                
-                // Update summary section
-                document.getElementById('monthly-list-value').textContent = '$' + totalListValue.toFixed(2);
-                document.getElementById('monthly-sales-value').textContent = '$' + totalSalesValue.toFixed(2);
-                document.getElementById('monthly-savings').textContent = '$' + (totalListValue - totalSalesValue).toFixed(2);
-                document.getElementById('monthly-discount').textContent = overallDiscount.toFixed(2) + '% discount';
-                
-                // Update contract values
-                document.getElementById('contract-list-value').textContent = '$' + (totalListValue * this.months).toFixed(2);
-                document.getElementById('contract-sales-value').value = (totalSalesValue * this.months).toFixed(2);
-                document.getElementById('contract-savings').textContent = '$' + ((totalListValue - totalSalesValue) * this.months).toFixed(2);
-                
-                // Update month texts
-                document.getElementById('contract-months-text').textContent = this.months + ' months';
-                document.getElementById('contract-months-sales-text').textContent = this.months + ' months';
-                document.getElementById('contract-months-savings-text').textContent = this.months + ' months';
+            updateTotals();
+            updateSummary();
+        }
+
+        // Function to update totals
+        function updateTotals() {
+            let totalListValue = 0;
+            let totalSalesValue = 0;
+            let listPriceSum = 0;
+            let salesPriceSum = 0;
+            
+            products.forEach(product => {
+                totalListValue += product.quantity * product.listPrice;
+                totalSalesValue += product.quantity * product.salesPrice;
+                listPriceSum += product.listPrice;
+                salesPriceSum += product.salesPrice;
+            });
+            
+            const overallDiscount = totalListValue > 0 ? ((totalListValue - totalSalesValue) / totalListValue) * 100 : 0;
+            
+            document.getElementById('list-price-sum').textContent = listPriceSum.toFixed(2);
+            document.getElementById('sales-price-sum').value = salesPriceSum.toFixed(2);
+            document.getElementById('total-list-value').textContent = totalListValue.toFixed(2);
+            document.getElementById('total-sales-value').textContent = totalSalesValue.toFixed(2);
+            document.getElementById('overall-discount').textContent = overallDiscount.toFixed(2) + '%';
+        }
+
+        // Function to update summary section
+        function updateSummary() {
+            let totalListValue = 0;
+            let totalSalesValue = 0;
+            
+            products.forEach(product => {
+                totalListValue += product.quantity * product.listPrice;
+                totalSalesValue += product.quantity * product.salesPrice;
+            });
+            
+            const overallDiscount = totalListValue > 0 ? ((totalListValue - totalSalesValue) / totalListValue) * 100 : 0;
+            const savings = totalListValue - totalSalesValue;
+            
+            document.getElementById('monthly-list-value').textContent = '$' + totalListValue.toFixed(2);
+            document.getElementById('monthly-sales-value').textContent = '$' + totalSalesValue.toFixed(2);
+            document.getElementById('monthly-savings').textContent = '$' + savings.toFixed(2);
+            document.getElementById('monthly-discount').textContent = overallDiscount.toFixed(2) + '% discount';
+            
+            document.getElementById('contract-list-value').textContent = '$' + (totalListValue * contractMonths).toFixed(2);
+            document.getElementById('contract-sales-value').value = (totalSalesValue * contractMonths).toFixed(2);
+            document.getElementById('contract-savings').textContent = '$' + (savings * contractMonths).toFixed(2);
+        }
+
+        // Function to reset products to initial state
+        function resetProducts() {
+            products = [];
+            nextId = 1;
+            addProduct('ActivTrak Professional', 160, 19.00, 23.95);
+            addProduct('Premier Support', 160, 1.50, 50.00);
+            addProduct('Screen Details', 160, 2.00, 50.00);
+        }
+
+        // Function to apply target discount
+        function applyTargetDiscount() {
+            const method = document.getElementById('distribution-method').value;
+            
+            if (method === 'equal') {
+                applyEqualDiscount();
+            } else if (method === 'priority') {
+                applyPriorityDiscount();
+            } else {
+                applyProportionalDiscount();
             }
         }
-        
-        // Initialize the calculator when the DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new DiscountCalculator();
-        });
+
+        // Function to apply equal discount
+        function applyEqualDiscount() {
+            products.forEach(product => {
+                updateProduct(product.id, 'discount', targetDiscount);
+            });
+        }
+
+        // Function to apply proportional discount
+        function applyProportionalDiscount() {
+            // Calculate current overall discount
+            let totalListValue = 0;
+            let totalSalesValue = 0;
+            
+            products.forEach(product => {
+                totalListValue += product.quantity * product.listPrice;
+                totalSalesValue += product.quantity * product.salesPrice;
+            });
+            
+            const currentDiscount = totalListValue > 0 ? ((totalListValue - totalSalesValue) / totalListValue) * 100 : 0;
+            
+            if (currentDiscount === 0) {
+                applyEqualDiscount();
+                return;
+            }
+            
+            // Apply proportional adjustment
+            const factor = targetDiscount / currentDiscount;
+            
+            products.forEach(product => {
+                const newDiscount = Math.min(99.99, product.discount * factor);
+                updateProduct(product.id, 'discount', newDiscount);
+            });
+        }
+
+        // Function to apply priority-based discount
+        function applyPriorityDiscount() {
+            // Sort products by total list value (highest first)
+            const sortedProducts = [...products].sort((a, b) => {
+                return (b.quantity * b.listPrice) - (a.quantity * a.listPrice);
+            });
+            
+            // Calculate current and target values
+            let totalListValue = 0;
+            products.forEach(product => {
+                totalListValue += product.quantity * product.listPrice;
+            });
+            
+            const targetSalesValue = totalListValue * (1 - targetDiscount / 100);
+            let currentSalesValue = 0;
+            products.forEach(product => {
+                currentSalesValue += product.quantity * product.salesPrice;
+            });
+            
+            // Adjust discounts in priority order
+            for (const product of sortedProducts) {
+                const productValue = product.quantity * product.listPrice;
+                
+                if (Math.abs(currentSalesValue - targetSalesValue) < 0.01) {
+                    break;
+                }
+                
+                if (currentSalesValue > targetSalesValue) {
+                    // Need to increase discount
+                    const additionalDiscountNeeded = (currentSalesValue - targetSalesValue) / productValue * 100;
+                    const newDiscount = Math.min(99.99, product.discount + additionalDiscountNeeded);
+                    const oldSalesValue = product.quantity * product.salesPrice;
+                    updateProduct(product.id, 'discount', newDiscount);
+                    const newSalesValue = product.quantity * product.salesPrice;
+                    currentSalesValue = currentSalesValue - (oldSalesValue - newSalesValue);
+                } else {
+                    // Need to decrease discount
+                    const discountReduction = (targetSalesValue - currentSalesValue) / productValue * 100;
+                    const newDiscount = Math.max(0, product.discount - discountReduction);
+                    const oldSalesValue = product.quantity * product.salesPrice;
+                    updateProduct(product.id, 'discount', newDiscount);
+                    const newSalesValue = product.quantity * product.salesPrice;
+                    currentSalesValue = currentSalesValue + (newSalesValue - oldSalesValue);
+                }
+            }
+        }
+
+        // Function to adjust all sales prices based on a new sales price sum
+        function adjustSalesPrices(newSalesPriceSum) {
+            let currentSum = 0;
+            products.forEach(product => {
+                currentSum += product.salesPrice;
+            });
+            
+            if (currentSum === 0) return;
+            
+            const factor = newSalesPriceSum / currentSum;
+            
+            products.forEach(product => {
+                const newSalesPrice = product.salesPrice * factor;
+                updateProduct(product.id, 'salesPrice', newSalesPrice);
+            });
+        }
+
+        // Function to adjust based on total contract sales value
+        function adjustContractSalesValue(newContractSalesValue) {
+            const newMonthlySalesValue = newContractSalesValue / contractMonths;
+            
+            let currentSalesValue = 0;
+            products.forEach(product => {
+                currentSalesValue += product.quantity * product.salesPrice;
+            });
+            
+            if (currentSalesValue === 0) return;
+            
+            const factor = newMonthlySalesValue / currentSalesValue;
+            
+            products.forEach(product => {
+                const newSalesPrice = product.salesPrice * factor;
+                updateProduct(product.id, 'salesPrice', newSalesPrice);
+            });
+        }
     </script>
 </body>
 </html>
