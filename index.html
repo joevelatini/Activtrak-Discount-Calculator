@@ -75,6 +75,13 @@
         .number-input {
             text-align: right;
             width: 100px;
+            -moz-appearance: textfield; /* Firefox */
+        }
+        
+        .number-input::-webkit-inner-spin-button, 
+        .number-input::-webkit-outer-spin-button { 
+            -webkit-appearance: none;
+            margin: 0;
         }
         
         button {
@@ -213,6 +220,13 @@
             font-size: 20px;
             font-weight: 700;
             text-align: right;
+            -moz-appearance: textfield; /* Firefox */
+        }
+        
+        .summary-input::-webkit-inner-spin-button, 
+        .summary-input::-webkit-outer-spin-button { 
+            -webkit-appearance: none;
+            margin: 0;
         }
         
         .summary-subtext {
@@ -495,13 +509,20 @@
                 document.getElementById('total-list-price').className = 'editable-total number-input';
                 
                 // Contract sales value input
-                document.getElementById('contract-sales-value').addEventListener('change', (e) => {
+                document.getElementById('contract-sales-value').addEventListener('blur', (e) => {
                     const newTotalSalesValue = parseFloat(e.target.value);
                     if (!isNaN(newTotalSalesValue)) {
                         this.adjustToTargetSalesValue(newTotalSalesValue);
                     }
                 });
-                document.getElementById('contract-sales-value').className = 'summary-input number-input';
+                
+                // Make sure the contract sales value input allows full editing
+                const contractSalesInput = document.getElementById('contract-sales-value');
+                contractSalesInput.className = 'summary-input number-input';
+                contractSalesInput.addEventListener('keydown', (e) => {
+                    // Allow the input to be fully editable without immediate recalculation
+                    e.stopPropagation();
+                });
             }
             
             loadInitialProducts() {
@@ -625,11 +646,15 @@
             }
             
             adjustToTargetListValue(targetTotalListValue) {
-                const { totalListValue } = this.calculateTotals();
+                // First, calculate the sum of list prices
+                let sumOfListPrices = 0;
+                this.products.forEach(product => {
+                    sumOfListPrices += product.listPrice;
+                });
                 
-                if (totalListValue === 0) return;
+                if (sumOfListPrices === 0) return;
                 
-                const adjustmentFactor = targetTotalListValue / totalListValue;
+                const adjustmentFactor = targetTotalListValue / sumOfListPrices;
                 
                 this.products.forEach(product => {
                     const newListPrice = product.listPrice * adjustmentFactor;
@@ -791,8 +816,14 @@
                 // Calculate and update totals
                 const { totalListValue, totalSalesValue, overallDiscount } = this.calculateTotals();
                 
+                // Calculate the sum of List Price($) fields
+                let sumOfListPrices = 0;
+                this.products.forEach(product => {
+                    sumOfListPrices += product.listPrice;
+                });
+                
                 // Update totals in the table footer
-                document.getElementById('total-list-price').value = totalListValue.toFixed(2);
+                document.getElementById('total-list-price').value = sumOfListPrices.toFixed(2);
                 document.getElementById('total-list-value').textContent = totalListValue.toFixed(2);
                 document.getElementById('overall-discount').textContent = overallDiscount.toFixed(2) + '%';
                 document.getElementById('total-sales-value').textContent = totalSalesValue.toFixed(2);
