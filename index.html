@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ActivTrak Discount Allocation Calculator</title>
-                <style>
-        /* Base styles */
+    <title>ActivTrak Discount Calculator</title>
+    <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             line-height: 1.5;
@@ -13,23 +12,6 @@
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
-        .editable-total {
-            width: 100%;
-            text-align: right;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 4px;
-            font-weight: 600;
-        }
-        
-        .summary-input {
-            width: 100%;
-            padding: 4px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 20px;
-            font-weight: 700;
-            text-align: right;
         }
         
         .container {
@@ -48,7 +30,6 @@
             margin-bottom: 24px;
         }
         
-        /* Form elements */
         .settings-panel {
             background-color: #f9fafb;
             border-radius: 8px;
@@ -140,7 +121,6 @@
             background-color: #dc2626;
         }
         
-        /* Table styles */
         .table-container {
             overflow-x: auto;
             margin-bottom: 24px;
@@ -180,7 +160,6 @@
             background-color: #f9fafb;
         }
         
-        /* Summary section */
         .summary-panel {
             background-color: #eff6ff;
             border-radius: 8px;
@@ -225,6 +204,16 @@
             font-weight: 700;
         }
         
+        .summary-input {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: right;
+        }
+        
         .summary-subtext {
             font-size: 12px;
             color: #6b7280;
@@ -237,7 +226,15 @@
             padding: 12px;
         }
         
-        /* Responsive adjustments */
+        .editable-total {
+            width: 100%;
+            text-align: right;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 4px;
+            font-weight: 600;
+        }
+        
         @media (max-width: 768px) {
             .controls {
                 flex-direction: column;
@@ -255,502 +252,564 @@
     </style>
 </head>
 <body>
-    <div id="app" class="container">
+    <div class="container">
         <h1>ActivTrak Discount Allocation Calculator</h1>
         
-        <div id="calculator"></div>
+        <div class="settings-panel">
+            <h2>Target Discount Settings</h2>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="target-discount">Target Overall Discount (%)</label>
+                    <input
+                        type="number"
+                        id="target-discount"
+                        min="0"
+                        max="99.99"
+                        step="0.01"
+                        value="30"
+                    />
+                </div>
+                
+                <div class="control-group">
+                    <label for="distribution-method">Distribution Method</label>
+                    <select id="distribution-method">
+                        <option value="proportional">Proportional (Maintain Ratios)</option>
+                        <option value="priority">Priority (Highest Value First)</option>
+                        <option value="equal">Equal (Same % Across All)</option>
+                    </select>
+                </div>
+                
+                <button id="apply-discount" class="btn-primary">
+                    Apply Target Discount
+                </button>
+                
+                <button id="reset-discount" class="btn-secondary">
+                    Reset
+                </button>
+                
+                <button id="add-product" class="btn-success">
+                    Add Product
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="products-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-right">Quantity</th>
+                        <th class="text-right">List Price ($)</th>
+                        <th class="text-right">Total List Value ($)</th>
+                        <th class="text-right" colspan="2">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Discount (%)</span>
+                                <span>Sales Price ($)</span>
+                            </div>
+                        </th>
+                        <th class="text-right">Total Sales Value ($)</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="products-body">
+                    <!-- Product rows will be added here -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Totals</td>
+                        <td class="text-right">
+                            <input
+                                type="number"
+                                id="total-list-price"
+                                class="editable-total"
+                                min="0"
+                                step="0.01"
+                            />
+                        </td>
+                        <td class="text-right" id="total-list-value">0.00</td>
+                        <td class="text-right" colspan="2" id="overall-discount">0.00%</td>
+                        <td class="text-right" id="total-sales-value">0.00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <div class="summary-panel">
+            <div class="summary-header">
+                <h2>Contract Summary</h2>
+                <div class="control-group">
+                    <label for="contract-months">Contract Term (Months):</label>
+                    <input
+                        type="number"
+                        id="contract-months"
+                        min="1"
+                        max="60"
+                        value="12"
+                    />
+                </div>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Monthly List Value</div>
+                    <div class="summary-value" id="monthly-list-value">$0.00</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Monthly Sales Value</div>
+                    <div class="summary-value" id="monthly-sales-value">$0.00</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Monthly Savings</div>
+                    <div class="summary-value" id="monthly-savings">$0.00</div>
+                    <div class="summary-subtext" id="monthly-discount">0.00% discount</div>
+                </div>
+            </div>
+            
+            <div class="highlight-section">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Total Contract List Value</div>
+                        <div class="summary-value" id="contract-list-value">$0.00</div>
+                        <div class="summary-subtext" id="contract-months-text">12 months</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Contract Sales Value</div>
+                        <div class="summary-value">
+                            <input
+                                type="number"
+                                id="contract-sales-value"
+                                class="summary-input"
+                                min="0"
+                                step="0.01"
+                                value="0.00"
+                            />
+                        </div>
+                        <div class="summary-subtext" id="contract-months-sales-text">12 months</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Contract Savings</div>
+                        <div class="summary-value" id="contract-savings">$0.00</div>
+                        <div class="summary-subtext" id="contract-months-savings-text">12 months</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Load React and ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Load Babel for JSX -->
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    
-    <!-- Calculator Component -->
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        
-        const DiscountAllocationCalculator = () => {
-            // Initial product data
-            const initialProducts = [
-                { id: 1, name: 'ActivTrak Professional', quantity: 160, listPrice: 19.00, salesPrice: 19.00, discount: 23.95 },
-                { id: 2, name: 'Premier Support', quantity: 160, listPrice: 1.50, salesPrice: 1.50, discount: 50.00 },
-                { id: 3, name: 'Screen Details', quantity: 160, listPrice: 2.00, salesPrice: 2.00, discount: 50.00 }
-            ];
+    <script>
+        // Product class to handle individual product calculations
+        class Product {
+            constructor(id, name, quantity, listPrice, discount) {
+                this.id = id;
+                this.name = name;
+                this.quantity = quantity;
+                this.listPrice = listPrice;
+                this.discount = discount;
+                this.salesPrice = this.calculateSalesPrice();
+            }
             
-            const [products, setProducts] = useState(initialProducts);
-            const [totalListValue, setTotalListValue] = useState(0);
-            const [totalSalesValue, setTotalSalesValue] = useState(0);
-            const [overallDiscount, setOverallDiscount] = useState(0);
-            const [targetDiscount, setTargetDiscount] = useState(30);
-            const [distributionMethod, setDistributionMethod] = useState('proportional');
-            const [nextId, setNextId] = useState(4); // For generating new product IDs
-            const [months, setMonths] = useState(12); // Default to annual term
+            calculateSalesPrice() {
+                return parseFloat((this.listPrice * (1 - this.discount / 100)).toFixed(2));
+            }
             
-            // Calculate totals whenever products change
-            useEffect(() => {
-                calculateTotals();
-            }, [products]);
+            calculateTotalListValue() {
+                return parseFloat((this.quantity * this.listPrice).toFixed(2));
+            }
             
-            const calculateTotals = () => {
-                let listTotal = 0;
-                let salesTotal = 0;
-                
-                products.forEach(product => {
-                    const productListValue = product.quantity * product.listPrice;
-                    const productSalesValue = calculateProductSalesValue(product);
-                    
-                    listTotal += productListValue;
-                    salesTotal += productSalesValue;
-                });
-                
-                setTotalListValue(listTotal);
-                setTotalSalesValue(salesTotal);
-                setOverallDiscount(listTotal > 0 ? ((listTotal - salesTotal) / listTotal) * 100 : 0);
-            // Added function to adjust list prices based on target total list value
-            const adjustToTargetListValue = (targetTotalListValue) => {
-                if (totalListValue === 0) return;
-                
-                const adjustmentFactor = targetTotalListValue / totalListValue;
-                
-                const updatedProducts = products.map(product => {
-                    const newListPrice = product.listPrice * adjustmentFactor;
-                    // Maintain the same discount percentage
-                    const newSalesPrice = newListPrice * (1 - product.discount / 100);
-                    
-                    return {
-                        ...product,
-                        listPrice: parseFloat(newListPrice.toFixed(2)),
-                        salesPrice: parseFloat(newSalesPrice.toFixed(2))
-                    };
-                });
-                
-                setProducts(updatedProducts);
-            };
+            calculateTotalSalesValue() {
+                return parseFloat((this.quantity * this.salesPrice).toFixed(2));
+            }
             
-            const handleProductChange = (id, field, value) => {
-                const updatedProducts = products.map(product => {
-                    if (product.id === id) {
-                        const updatedProduct = { ...product, [field]: value };
-                        
-                        // If salesPrice is being directly edited, recalculate the discount
-                        if (field === 'salesPrice') {
-                            const listValue = updatedProduct.quantity * updatedProduct.listPrice;
-                            const salesValue = updatedProduct.quantity * updatedProduct.salesPrice;
-                            updatedProduct.discount = listValue > 0 ? ((listValue - salesValue) / listValue) * 100 : 0;
-                        }
-                        
-                        // If discount is edited, recalculate the salesPrice
-                        if (field === 'discount') {
-                            updatedProduct.salesPrice = updatedProduct.listPrice * (1 - updatedProduct.discount / 100);
-                        }
-                        
-                        // If listPrice is edited, recalculate the salesPrice based on discount
-                        if (field === 'listPrice') {
-                            updatedProduct.salesPrice = updatedProduct.listPrice * (1 - updatedProduct.discount / 100);
-                        }
-                        
-                        return updatedProduct;
-                    }
-                    return product;
-                });
-                setProducts(updatedProducts);
-            };
+            updateDiscount(discount) {
+                this.discount = discount;
+                this.salesPrice = this.calculateSalesPrice();
+            }
             
-            const addNewProduct = () => {
-                const newProduct = {
-                    id: nextId,
-                    name: 'New Product',
-                    quantity: 1,
-                    listPrice: 0.00,
-                    salesPrice: 0.00,
-                    discount: 0.00
-                };
-                setProducts([...products, newProduct]);
-                setNextId(nextId + 1);
-            };
-            
-            const removeProduct = (id) => {
-                const updatedProducts = products.filter(product => product.id !== id);
-                setProducts(updatedProducts);
-            };
-            
-            const applyTargetDiscount = () => {
-                if (distributionMethod === 'proportional') {
-                    applyProportionalDiscount();
-                } else if (distributionMethod === 'priority') {
-                    applyPriorityDiscount();
+            updateSalesPrice(salesPrice) {
+                this.salesPrice = salesPrice;
+                if (this.listPrice > 0) {
+                    this.discount = parseFloat((((this.listPrice - this.salesPrice) / this.listPrice) * 100).toFixed(2));
+                    // Cap discount at 99.99%
+                    this.discount = Math.min(99.99, this.discount);
                 } else {
-                    applyEqualDiscount();
+                    this.discount = 0;
                 }
-            };
+            }
             
-            const applyProportionalDiscount = () => {
+            updateListPrice(listPrice) {
+                this.listPrice = listPrice;
+                this.salesPrice = this.calculateSalesPrice();
+            }
+            
+            updateQuantity(quantity) {
+                this.quantity = quantity;
+            }
+        }
+        
+        // Calculator class to manage the entire calculator
+        class DiscountCalculator {
+            constructor() {
+                this.products = [];
+                this.nextId = 1;
+                this.months = 12;
+                this.targetDiscount = 30;
+                this.distributionMethod = 'proportional';
+                
+                this.initEventListeners();
+                this.loadInitialProducts();
+                this.render();
+            }
+            
+            initEventListeners() {
+                // Settings panel buttons
+                document.getElementById('apply-discount').addEventListener('click', () => this.applyTargetDiscount());
+                document.getElementById('reset-discount').addEventListener('click', () => this.resetToInitial());
+                document.getElementById('add-product').addEventListener('click', () => this.addProduct());
+                
+                // Target discount and distribution method
+                document.getElementById('target-discount').addEventListener('input', (e) => {
+                    this.targetDiscount = parseFloat(e.target.value) || 0;
+                });
+                
+                document.getElementById('distribution-method').addEventListener('change', (e) => {
+                    this.distributionMethod = e.target.value;
+                });
+                
+                // Contract months
+                document.getElementById('contract-months').addEventListener('input', (e) => {
+                    this.months = parseInt(e.target.value) || 1;
+                    this.render();
+                });
+                
+                // Total list price input
+                document.getElementById('total-list-price').addEventListener('input', (e) => {
+                    const newTotalListValue = parseFloat(e.target.value);
+                    if (!isNaN(newTotalListValue)) {
+                        this.adjustToTargetListValue(newTotalListValue);
+                    }
+                });
+                
+                // Contract sales value input
+                document.getElementById('contract-sales-value').addEventListener('input', (e) => {
+                    const newTotalSalesValue = parseFloat(e.target.value);
+                    if (!isNaN(newTotalSalesValue)) {
+                        this.adjustToTargetSalesValue(newTotalSalesValue);
+                    }
+                });
+            }
+            
+            loadInitialProducts() {
+                // Initial products from the screenshot
+                this.addProduct('ActivTrak Professional', 160, 19.00, 23.95);
+                this.addProduct('Premier Support', 160, 1.50, 50.00);
+                this.addProduct('Screen Details', 160, 2.00, 50.00);
+            }
+            
+            addProduct(name = 'New Product', quantity = 1, listPrice = 0.00, discount = 0.00) {
+                const product = new Product(this.nextId++, name, quantity, listPrice, discount);
+                this.products.push(product);
+                this.render();
+                return product;
+            }
+            
+            removeProduct(id) {
+                this.products = this.products.filter(product => product.id !== id);
+                this.render();
+            }
+            
+            calculateTotals() {
+                let totalListValue = 0;
+                let totalSalesValue = 0;
+                
+                this.products.forEach(product => {
+                    totalListValue += product.calculateTotalListValue();
+                    totalSalesValue += product.calculateTotalSalesValue();
+                });
+                
+                const overallDiscount = totalListValue > 0 
+                    ? ((totalListValue - totalSalesValue) / totalListValue) * 100 
+                    : 0;
+                
+                return {
+                    totalListValue,
+                    totalSalesValue,
+                    overallDiscount
+                };
+            }
+            
+            applyTargetDiscount() {
+                switch (this.distributionMethod) {
+                    case 'proportional':
+                        this.applyProportionalDiscount();
+                        break;
+                    case 'priority':
+                        this.applyPriorityDiscount();
+                        break;
+                    case 'equal':
+                        this.applyEqualDiscount();
+                        break;
+                }
+                
+                this.render();
+            }
+            
+            applyProportionalDiscount() {
+                const { totalListValue, totalSalesValue, overallDiscount } = this.calculateTotals();
+                
                 if (totalListValue === 0) return;
                 
-                // Calculate the adjustment factor
-                const currentDiscount = overallDiscount;
-                if (currentDiscount === 0) {
-                    // If current discount is 0, apply equal discount
-                    applyEqualDiscount();
+                // If current discount is 0, apply equal discount
+                if (overallDiscount === 0) {
+                    this.applyEqualDiscount();
                     return;
                 }
                 
-                const adjustmentFactor = targetDiscount / currentDiscount;
+                const adjustmentFactor = this.targetDiscount / overallDiscount;
                 
-                // Apply adjusted discounts
-                const updatedProducts = products.map(product => {
+                this.products.forEach(product => {
                     let newDiscount = product.discount * adjustmentFactor;
-                    // Cap at 99.99% discount
-                    newDiscount = Math.min(newDiscount, 99.99);
-                    const newSalesPrice = product.listPrice * (1 - newDiscount / 100);
-                    return { 
-                        ...product, 
-                        discount: parseFloat(newDiscount.toFixed(2)),
-                        salesPrice: parseFloat(newSalesPrice.toFixed(2))
-                    };
+                    // Cap at 99.99%
+                    newDiscount = Math.min(99.99, newDiscount);
+                    product.updateDiscount(newDiscount);
                 });
-                
-                setProducts(updatedProducts);
-            };
+            }
             
-            const applyPriorityDiscount = () => {
+            applyPriorityDiscount() {
+                const { totalListValue, totalSalesValue } = this.calculateTotals();
+                
                 if (totalListValue === 0) return;
                 
                 // Sort products by price (highest to lowest)
-                const sortedProductIds = [...products]
-                    .sort((a, b) => (b.listPrice * b.quantity) - (a.listPrice * a.quantity))
-                    .map(p => p.id);
+                const sortedProducts = [...this.products].sort((a, b) => 
+                    (b.listPrice * b.quantity) - (a.listPrice * a.quantity)
+                );
                 
-                // Start with current discounts
-                const updatedProducts = [...products];
-                const targetValue = totalListValue * (1 - targetDiscount / 100);
+                const targetValue = totalListValue * (1 - this.targetDiscount / 100);
                 let currentValue = totalSalesValue;
                 
-                // Adjust discounts in priority order
-                for (const id of sortedProductIds) {
+                for (const product of sortedProducts) {
                     if (Math.abs(currentValue - targetValue) < 0.01) break;
                     
-                    const productIndex = updatedProducts.findIndex(p => p.id === id);
-                    const product = updatedProducts[productIndex];
-                    const productListValue = product.quantity * product.listPrice;
+                    const productListValue = product.calculateTotalListValue();
                     
                     if (currentValue > targetValue) {
                         // Need to increase discount
                         const additionalDiscountNeeded = (currentValue - targetValue) / productListValue * 100;
                         const newDiscount = Math.min(99.99, product.discount + additionalDiscountNeeded);
-                        const newSalesPrice = product.listPrice * (1 - newDiscount / 100);
-                        
-                        updatedProducts[productIndex] = { 
-                            ...product, 
-                            discount: parseFloat(newDiscount.toFixed(2)),
-                            salesPrice: parseFloat(newSalesPrice.toFixed(2))
-                        };
-                        currentValue = currentValue - (productListValue * (newDiscount - product.discount) / 100);
+                        const originalSalesValue = product.calculateTotalSalesValue();
+                        product.updateDiscount(newDiscount);
+                        const newSalesValue = product.calculateTotalSalesValue();
+                        currentValue = currentValue - (originalSalesValue - newSalesValue);
                     } else {
                         // Need to decrease discount
                         const discountReduction = (targetValue - currentValue) / productListValue * 100;
                         const newDiscount = Math.max(0, product.discount - discountReduction);
-                        const newSalesPrice = product.listPrice * (1 - newDiscount / 100);
-                        
-                        updatedProducts[productIndex] = { 
-                            ...product, 
-                            discount: parseFloat(newDiscount.toFixed(2)),
-                            salesPrice: parseFloat(newSalesPrice.toFixed(2))
-                        };
-                        currentValue = currentValue + (productListValue * (product.discount - newDiscount) / 100);
+                        const originalSalesValue = product.calculateTotalSalesValue();
+                        product.updateDiscount(newDiscount);
+                        const newSalesValue = product.calculateTotalSalesValue();
+                        currentValue = currentValue + (newSalesValue - originalSalesValue);
                     }
                 }
-                
-                setProducts(updatedProducts);
-            };
+            }
             
-            const applyEqualDiscount = () => {
-                // Apply the same discount to all products
-                const updatedProducts = products.map(product => {
-                    const newSalesPrice = product.listPrice * (1 - targetDiscount / 100);
-                    return { 
-                        ...product, 
-                        discount: parseFloat(targetDiscount.toFixed(2)),
-                        salesPrice: parseFloat(newSalesPrice.toFixed(2))
-                    };
+            applyEqualDiscount() {
+                this.products.forEach(product => {
+                    product.updateDiscount(this.targetDiscount);
+                });
+            }
+            
+            adjustToTargetListValue(targetTotalListValue) {
+                const { totalListValue } = this.calculateTotals();
+                
+                if (totalListValue === 0) return;
+                
+                const adjustmentFactor = targetTotalListValue / totalListValue;
+                
+                this.products.forEach(product => {
+                    const newListPrice = product.listPrice * adjustmentFactor;
+                    product.updateListPrice(newListPrice);
                 });
                 
-                setProducts(updatedProducts);
-            };
+                this.render();
+            }
             
-            const resetDiscounts = () => {
-                setProducts(initialProducts);
-            };
-            
-            const calculateProductValue = (product) => {
-                return product.quantity * product.listPrice;
-            };
-            
-            const calculateProductSalesValue = (product) => {
-                return product.quantity * product.salesPrice;
-            };
-            
-            // Added function to adjust sales price based on target total sales value
-            const adjustToTargetSalesValue = (targetTotalSalesValue) => {
+            adjustToTargetSalesValue(targetContractSalesValue) {
+                const { totalSalesValue } = this.calculateTotals();
+                
                 if (totalSalesValue === 0) return;
                 
-                const targetMonthlySalesValue = targetTotalSalesValue / months;
+                const targetMonthlySalesValue = targetContractSalesValue / this.months;
                 const adjustmentFactor = targetMonthlySalesValue / totalSalesValue;
                 
-                const updatedProducts = products.map(product => {
+                this.products.forEach(product => {
                     const newSalesPrice = product.salesPrice * adjustmentFactor;
-                    const newDiscount = product.listPrice > 0 
-                        ? Math.min(99.99, ((product.listPrice - newSalesPrice) / product.listPrice) * 100)
-                        : 0;
-                    
-                    return {
-                        ...product,
-                        salesPrice: parseFloat(newSalesPrice.toFixed(2)),
-                        discount: parseFloat(newDiscount.toFixed(2))
-                    };
+                    product.updateSalesPrice(newSalesPrice);
                 });
                 
-                setProducts(updatedProducts);
-            };
+                this.render();
+            }
             
-            return (
-                <div>
-                    <div className="settings-panel">
-                        <h2>Target Discount Settings</h2>
-                        <div className="controls">
-                            <div className="control-group">
-                                <label>Target Overall Discount (%)</label>
-                                <input
-                                    type="number"
-                                    value={targetDiscount}
-                                    onChange={(e) => setTargetDiscount(parseFloat(e.target.value) || 0)}
-                                    min="0"
-                                    max="99.99"
-                                    step="0.01"
-                                />
-                            </div>
-                            
-                            <div className="control-group">
-                                <label>Distribution Method</label>
-                                <select
-                                    value={distributionMethod}
-                                    onChange={(e) => setDistributionMethod(e.target.value)}
-                                >
-                                    <option value="proportional">Proportional (Maintain Ratios)</option>
-                                    <option value="priority">Priority (Highest Value First)</option>
-                                    <option value="equal">Equal (Same % Across All)</option>
-                                </select>
-                            </div>
-                            
-                            <button
-                                onClick={applyTargetDiscount}
-                                className="btn-primary"
-                            >
-                                Apply Target Discount
-                            </button>
-                            
-                            <button
-                                onClick={resetDiscounts}
-                                className="btn-secondary"
-                            >
-                                Reset
-                            </button>
-                            
-                            <button
-                                onClick={addNewProduct}
-                                className="btn-success"
-                            >
-                                Add Product
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div className="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th className="text-right">Quantity</th>
-                                    <th className="text-right">List Price ($)</th>
-                                    <th className="text-right">Total List Value ($)</th>
-                                    <th className="text-right" colSpan="2">
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <span>Discount (%)</span>
-                                            <span>Sales Price ($)</span>
-                                        </div>
-                                    </th>
-                                    <th className="text-right">Total Sales Value ($)</th>
-                                    <th className="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {products.map((product) => (
-                                    <tr key={product.id}>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                value={product.name}
-                                                onChange={(e) => handleProductChange(product.id, 'name', e.target.value)}
-                                                className="text-input"
-                                            />
-                                        </td>
-                                        <td className="text-right">
-                                            <input
-                                                type="number"
-                                                value={product.quantity}
-                                                onChange={(e) => handleProductChange(product.id, 'quantity', parseInt(e.target.value) || 0)}
-                                                min="1"
-                                            />
-                                        </td>
-                                        <td className="text-right">
-                                            <input
-                                                type="number"
-                                                value={product.listPrice}
-                                                onChange={(e) => handleProductChange(product.id, 'listPrice', parseFloat(e.target.value) || 0)}
-                                                min="0"
-                                                step="0.01"
-                                            />
-                                        </td>
-                                        <td className="text-right">{calculateProductValue(product).toFixed(2)}</td>
-                                        <td className="text-right" colSpan="2">
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <input
-                                                    type="number"
-                                                    value={product.discount}
-                                                    onChange={(e) => handleProductChange(product.id, 'discount', parseFloat(e.target.value) || 0)}
-                                                    min="0"
-                                                    max="99.99"
-                                                    step="0.01"
-                                                    style={{ width: '40%' }}
-                                                />
-                                                <input
-                                                    type="number"
-                                                    value={product.salesPrice}
-                                                    onChange={(e) => handleProductChange(product.id, 'salesPrice', parseFloat(e.target.value) || 0)}
-                                                    min="0"
-                                                    step="0.01"
-                                                    style={{ width: '40%' }}
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className="text-right">
-                                            {calculateProductSalesValue(product).toFixed(2)}
-                                        </td>
-                                        <td className="text-center">
-                                            <button
-                                                onClick={() => removeProduct(product.id)}
-                                                className="btn-danger"
-                                            >
-                                                Remove
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colSpan="2">Totals</td>
-                                    <td className="text-right">
-                                        <input
-                                            type="number"
-                                            value={totalListValue.toFixed(2)}
-                                            onChange={(e) => {
-                                                const newTotalListValue = parseFloat(e.target.value);
-                                                if (!isNaN(newTotalListValue)) {
-                                                    adjustToTargetListValue(newTotalListValue);
-                                                }
-                                            }}
-                                            className="editable-total"
-                                            min="0"
-                                            step="0.01"
-                                        />
-                                    </td>
-                                    <td className="text-right">{totalListValue.toFixed(2)}</td>
-                                    <td className="text-right" colSpan="2">{overallDiscount.toFixed(2)}%</td>
-                                    <td className="text-right">{totalSalesValue.toFixed(2)}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    
-                    <div className="summary-panel">
-                        <div className="summary-header">
-                            <h2>Contract Summary</h2>
-                            <div className="control-group">
-                                <label>Contract Term (Months):</label>
-                                <input
-                                    type="number"
-                                    value={months}
-                                    onChange={(e) => setMonths(parseInt(e.target.value) || 1)}
-                                    min="1"
-                                    max="60"
-                                />
-                            </div>
-                        </div>
-                        
-                        <div className="summary-grid">
-                            <div className="summary-card">
-                                <div className="summary-label">Monthly List Value</div>
-                                <div className="summary-value">${totalListValue.toFixed(2)}</div>
-                            </div>
-                            <div className="summary-card">
-                                <div className="summary-label">Monthly Sales Value</div>
-                                <div className="summary-value">${totalSalesValue.toFixed(2)}</div>
-                            </div>
-                            <div className="summary-card">
-                                <div className="summary-label">Monthly Savings</div>
-                                <div className="summary-value">${(totalListValue - totalSalesValue).toFixed(2)}</div>
-                                <div className="summary-subtext">{overallDiscount.toFixed(2)}% discount</div>
-                            </div>
-                        </div>
-                        
-                        <div className="highlight-section">
-                            <div className="summary-grid">
-                                <div className="summary-card">
-                                    <div className="summary-label">Total Contract List Value</div>
-                                    <div className="summary-value">${(totalListValue * months).toFixed(2)}</div>
-                                    <div className="summary-subtext">{months} months</div>
-                                </div>
-                                <div className="summary-card">
-                                    <div className="summary-label">Total Contract Sales Value</div>
-                                    <div className="summary-value">
-                                                                                    <input
-                                            type="number"
-                                            value={(totalSalesValue * months).toFixed(2)}
-                                            onChange={(e) => {
-                                                // Parse the input value as a number
-                                                const newTotalSalesValue = parseFloat(e.target.value);
-                                                // Only update if the value is a valid number
-                                                if (!isNaN(newTotalSalesValue)) {
-                                                    adjustToTargetSalesValue(newTotalSalesValue);
-                                                }
-                                            }}
-                                            className="summary-input"
-                                            min="0"
-                                            step="0.01"
-                                        />
-                                    </div>
-                                    <div className="summary-subtext">{months} months</div>
-                                </div>
-                                <div className="summary-card">
-                                    <div className="summary-label">Total Contract Savings</div>
-                                    <div className="summary-value">${((totalListValue - totalSalesValue) * months).toFixed(2)}</div>
-                                    <div className="summary-subtext">{months} months</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+            resetToInitial() {
+                this.products = [];
+                this.nextId = 1;
+                this.loadInitialProducts();
+            }
+            
+            renderProductRow(product) {
+                const row = document.createElement('tr');
+                
+                // Product name cell
+                const nameCell = document.createElement('td');
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.value = product.name;
+                nameInput.className = 'text-input';
+                nameInput.addEventListener('input', (e) => {
+                    product.name = e.target.value;
+                });
+                nameCell.appendChild(nameInput);
+                
+                // Quantity cell
+                const quantityCell = document.createElement('td');
+                quantityCell.className = 'text-right';
+                const quantityInput = document.createElement('input');
+                quantityInput.type = 'number';
+                quantityInput.value = product.quantity;
+                quantityInput.min = '1';
+                quantityInput.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value) || 0;
+                    product.updateQuantity(value);
+                    this.render();
+                });
+                quantityCell.appendChild(quantityInput);
+                
+                // List price cell
+                const listPriceCell = document.createElement('td');
+                listPriceCell.className = 'text-right';
+                const listPriceInput = document.createElement('input');
+                listPriceInput.type = 'number';
+                listPriceInput.value = product.listPrice.toFixed(2);
+                listPriceInput.min = '0';
+                listPriceInput.step = '0.01';
+                listPriceInput.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value) || 0;
+                    product.updateListPrice(value);
+                    this.render();
+                });
+                listPriceCell.appendChild(listPriceInput);
+                
+                // Total list value cell
+                const totalListValueCell = document.createElement('td');
+                totalListValueCell.className = 'text-right';
+                totalListValueCell.textContent = product.calculateTotalListValue().toFixed(2);
+                
+                // Discount and sales price cell (combined)
+                const discountSalesPriceCell = document.createElement('td');
+                discountSalesPriceCell.className = 'text-right';
+                discountSalesPriceCell.colSpan = 2;
+                
+                const flexContainer = document.createElement('div');
+                flexContainer.style.display = 'flex';
+                flexContainer.style.justifyContent = 'space-between';
+                flexContainer.style.alignItems = 'center';
+                
+                const discountInput = document.createElement('input');
+                discountInput.type = 'number';
+                discountInput.value = product.discount.toFixed(2);
+                discountInput.min = '0';
+                discountInput.max = '99.99';
+                discountInput.step = '0.01';
+                discountInput.style.width = '40%';
+                discountInput.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value) || 0;
+                    product.updateDiscount(value);
+                    this.render();
+                });
+                
+                const salesPriceInput = document.createElement('input');
+                salesPriceInput.type = 'number';
+                salesPriceInput.value = product.salesPrice.toFixed(2);
+                salesPriceInput.min = '0';
+                salesPriceInput.step = '0.01';
+                salesPriceInput.style.width = '40%';
+                salesPriceInput.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value) || 0;
+                    product.updateSalesPrice(value);
+                    this.render();
+                });
+                
+                flexContainer.appendChild(discountInput);
+                flexContainer.appendChild(salesPriceInput);
+                discountSalesPriceCell.appendChild(flexContainer);
+                
+                // Total sales value cell
+                const totalSalesValueCell = document.createElement('td');
+                totalSalesValueCell.className = 'text-right';
+                totalSalesValueCell.textContent = product.calculateTotalSalesValue().toFixed(2);
+                
+                // Actions cell
+                const actionsCell = document.createElement('td');
+                actionsCell.className = 'text-center';
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.className = 'btn-danger';
+                removeButton.addEventListener('click', () => this.removeProduct(product.id));
+                actionsCell.appendChild(removeButton);
+                
+                // Add all cells to the row
+                row.appendChild(nameCell);
+                row.appendChild(quantityCell);
+                row.appendChild(listPriceCell);
+                row.appendChild(totalListValueCell);
+                row.appendChild(discountSalesPriceCell);
+                row.appendChild(totalSalesValueCell);
+                row.appendChild(actionsCell);
+                
+                return row;
+            }
+            
+            render() {
+                // Clear existing products
+                const tbody = document.getElementById('products-body');
+                tbody.innerHTML = '';
+                
+                // Add each product row
+                this.products.forEach(product => {
+                    tbody.appendChild(this.renderProductRow(product));
+                });
+                
+                // Calculate and update totals
+                const { totalListValue, totalSalesValue, overallDiscount } = this.calculateTotals();
+                
+                // Update totals in the table footer
+                document.getElementById('total-list-price').value = totalListValue.toFixed(2);
+                document.getElementById('total-list-value').textContent = totalListValue.toFixed(2);
+                document.getElementById('overall-discount').textContent = overallDiscount.toFixed(2) + '%';
+                document.getElementById('total-sales-value').textContent = totalSalesValue.toFixed(2);
+                
+                // Update summary section
+                document.getElementById('monthly-list-value').textContent = '$' + totalListValue.toFixed(2);
+                document.getElementById('monthly-sales-value').textContent = '$' + totalSalesValue.toFixed(2);
+                document.getElementById('monthly-savings').textContent = '$' + (totalListValue - totalSalesValue).toFixed(2);
+                document.getElementById('monthly-discount').textContent = overallDiscount.toFixed(2) + '% discount';
+                
+                // Update contract values
+                document.getElementById('contract-list-value').textContent = '$' + (totalListValue * this.months).toFixed(2);
+                document.getElementById('contract-sales-value').value = (totalSalesValue * this.months).toFixed(2);
+                document.getElementById('contract-savings').textContent = '$' + ((totalListValue - totalSalesValue) * this.months).toFixed(2);
+                
+                // Update month texts
+                document.getElementById('contract-months-text').textContent = this.months + ' months';
+                document.getElementById('contract-months-sales-text').textContent = this.months + ' months';
+                document.getElementById('contract-months-savings-text').textContent = this.months + ' months';
+            }
+        }
         
-        // Render the calculator component
-        const root = ReactDOM.createRoot(document.getElementById('calculator'));
-        root.render(<DiscountAllocationCalculator />);
+        // Initialize the calculator when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new DiscountCalculator();
+        });
     </script>
 </body>
 </html>
