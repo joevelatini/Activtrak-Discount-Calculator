@@ -323,12 +323,8 @@
                         <th class="text-right">Quantity</th>
                         <th class="text-right">List Price ($)</th>
                         <th class="text-right">Total List Value ($)</th>
-                        <th class="text-right" colspan="2">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Discount (%)</span>
-                                <span>Sales Price ($)</span>
-                            </div>
-                        </th>
+                        <th class="text-right">Discount (%)</th>
+                        <th class="text-right">Sales Price ($)</th>
                         <th class="text-right">Total Sales Value ($)</th>
                         <th class="text-center">Actions</th>
                     </tr>
@@ -507,18 +503,16 @@
                 document.getElementById('contract-months').className = 'number-input';
                 
                 // Total sales price input
-                document.getElementById('total-sales-price-sum').addEventListener('blur', (e) => {
+                document.getElementById('total-sales-price-sum').addEventListener('change', (e) => {
                     const newTotalSalesPrice = parseFloat(e.target.value);
                     if (!isNaN(newTotalSalesPrice)) {
                         this.adjustTotalSalesPrice(newTotalSalesPrice);
                     }
                 });
                 
-                // Make sure the total sales price input allows full editing
+                // Make sales price total fully editable
                 const totalSalesPriceInput = document.getElementById('total-sales-price-sum');
-                totalSalesPriceInput.className = 'editable-total number-input';
-                totalSalesPriceInput.addEventListener('keydown', (e) => {
-                    // Allow the input to be fully editable without immediate recalculation
+                totalSalesPriceInput.addEventListener('keydown', function(e) {
                     e.stopPropagation();
                 });
                 
@@ -751,46 +745,38 @@
                 totalListValueCell.className = 'text-right';
                 totalListValueCell.textContent = product.calculateTotalListValue().toFixed(2);
                 
-                // Discount and sales price cell (combined)
-                const discountSalesPriceCell = document.createElement('td');
-                discountSalesPriceCell.className = 'text-right';
-                discountSalesPriceCell.colSpan = 2;
-                
-                const flexContainer = document.createElement('div');
-                flexContainer.style.display = 'flex';
-                flexContainer.style.justifyContent = 'space-between';
-                flexContainer.style.alignItems = 'center';
-                
+                // Discount cell
+                const discountCell = document.createElement('td');
+                discountCell.className = 'text-right';
                 const discountInput = document.createElement('input');
                 discountInput.type = 'number';
                 discountInput.value = product.discount.toFixed(2);
                 discountInput.min = '0';
                 discountInput.max = '99.99';
                 discountInput.step = '0.01';
-                discountInput.style.width = '40%';
                 discountInput.className = 'number-input';
                 discountInput.addEventListener('change', (e) => {
                     const value = parseFloat(e.target.value) || 0;
                     product.updateDiscount(value);
                     this.render();
                 });
+                discountCell.appendChild(discountInput);
                 
+                // Sales price cell
+                const salesPriceCell = document.createElement('td');
+                salesPriceCell.className = 'text-right';
                 const salesPriceInput = document.createElement('input');
                 salesPriceInput.type = 'number';
                 salesPriceInput.value = product.salesPrice.toFixed(2);
                 salesPriceInput.min = '0';
                 salesPriceInput.step = '0.01';
-                salesPriceInput.style.width = '40%';
                 salesPriceInput.className = 'number-input';
                 salesPriceInput.addEventListener('change', (e) => {
                     const value = parseFloat(e.target.value) || 0;
                     product.updateSalesPrice(value);
                     this.render();
                 });
-                
-                flexContainer.appendChild(discountInput);
-                flexContainer.appendChild(salesPriceInput);
-                discountSalesPriceCell.appendChild(flexContainer);
+                salesPriceCell.appendChild(salesPriceInput);
                 
                 // Total sales value cell
                 const totalSalesValueCell = document.createElement('td');
@@ -811,7 +797,8 @@
                 row.appendChild(quantityCell);
                 row.appendChild(listPriceCell);
                 row.appendChild(totalListValueCell);
-                row.appendChild(discountSalesPriceCell);
+                row.appendChild(discountCell);
+                row.appendChild(salesPriceCell);
                 row.appendChild(totalSalesValueCell);
                 row.appendChild(actionsCell);
                 
