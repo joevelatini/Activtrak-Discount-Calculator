@@ -242,12 +242,19 @@
         }
         
         .editable-total {
-            width: 100%;
+            width: 80px;
             text-align: right;
             border: 1px solid #d1d5db;
             border-radius: 4px;
             padding: 4px;
             font-weight: 600;
+            -moz-appearance: textfield; /* Firefox */
+        }
+        
+        .editable-total::-webkit-inner-spin-button, 
+        .editable-total::-webkit-outer-spin-button { 
+            -webkit-appearance: none;
+            margin: 0;
         }
         
         @media (max-width: 768px) {
@@ -499,14 +506,21 @@
                 });
                 document.getElementById('contract-months').className = 'number-input';
                 
-                // Total list price input
-                document.getElementById('total-list-price').addEventListener('change', (e) => {
-                    const newTotalListValue = parseFloat(e.target.value);
-                    if (!isNaN(newTotalListValue)) {
-                        this.adjustToTargetListValue(newTotalListValue);
+                // Total sales price input
+                document.getElementById('total-sales-price-sum').addEventListener('blur', (e) => {
+                    const newTotalSalesPrice = parseFloat(e.target.value);
+                    if (!isNaN(newTotalSalesPrice)) {
+                        this.adjustTotalSalesPrice(newTotalSalesPrice);
                     }
                 });
-                document.getElementById('total-list-price').className = 'editable-total number-input';
+                
+                // Make sure the total sales price input allows full editing
+                const totalSalesPriceInput = document.getElementById('total-sales-price-sum');
+                totalSalesPriceInput.className = 'editable-total number-input';
+                totalSalesPriceInput.addEventListener('keydown', (e) => {
+                    // Allow the input to be fully editable without immediate recalculation
+                    e.stopPropagation();
+                });
                 
                 // Contract sales value input
                 document.getElementById('contract-sales-value').addEventListener('blur', (e) => {
@@ -645,20 +659,21 @@
                 });
             }
             
-            adjustToTargetListValue(targetTotalListValue) {
-                // First, calculate the sum of list prices
-                let sumOfListPrices = 0;
+            // Adjust the sales prices based on a target sum
+            adjustTotalSalesPrice(targetTotalSalesPrice) {
+                // Calculate current sum of sales prices
+                let sumOfSalesPrices = 0;
                 this.products.forEach(product => {
-                    sumOfListPrices += product.listPrice;
+                    sumOfSalesPrices += product.salesPrice;
                 });
                 
-                if (sumOfListPrices === 0) return;
+                if (sumOfSalesPrices === 0) return;
                 
-                const adjustmentFactor = targetTotalListValue / sumOfListPrices;
+                const adjustmentFactor = targetTotalSalesPrice / sumOfSalesPrices;
                 
                 this.products.forEach(product => {
-                    const newListPrice = product.listPrice * adjustmentFactor;
-                    product.updateListPrice(newListPrice);
+                    const newSalesPrice = product.salesPrice * adjustmentFactor;
+                    product.updateSalesPrice(newSalesPrice);
                 });
                 
                 this.render();
@@ -816,14 +831,17 @@
                 // Calculate and update totals
                 const { totalListValue, totalSalesValue, overallDiscount } = this.calculateTotals();
                 
-                // Calculate the sum of List Price($) fields
+                // Calculate the sum of List Price($) and Sales Price($) fields
                 let sumOfListPrices = 0;
+                let sumOfSalesPrices = 0;
                 this.products.forEach(product => {
                     sumOfListPrices += product.listPrice;
+                    sumOfSalesPrices += product.salesPrice;
                 });
                 
                 // Update totals in the table footer
-                document.getElementById('total-list-price').value = sumOfListPrices.toFixed(2);
+                document.getElementById('total-list-price-sum').textContent = sumOfListPrices.toFixed(2);
+                document.getElementById('total-sales-price-sum').value = sumOfSalesPrices.toFixed(2);
                 document.getElementById('total-list-value').textContent = totalListValue.toFixed(2);
                 document.getElementById('overall-discount').textContent = overallDiscount.toFixed(2) + '%';
                 document.getElementById('total-sales-value').textContent = totalSalesValue.toFixed(2);
