@@ -69,11 +69,12 @@
         }
         
         input[type="number"] {
-            width: 80px;
+            width: 100px;
         }
         
-        .text-input {
-            width: 100%;
+        .number-input {
+            text-align: right;
+            width: 100px;
         }
         
         button {
@@ -468,35 +469,39 @@
                 document.getElementById('add-product').addEventListener('click', () => this.addProduct());
                 
                 // Target discount and distribution method
-                document.getElementById('target-discount').addEventListener('input', (e) => {
+                document.getElementById('target-discount').addEventListener('change', (e) => {
                     this.targetDiscount = parseFloat(e.target.value) || 0;
                 });
+                document.getElementById('target-discount').className = 'number-input';
                 
                 document.getElementById('distribution-method').addEventListener('change', (e) => {
                     this.distributionMethod = e.target.value;
                 });
                 
                 // Contract months
-                document.getElementById('contract-months').addEventListener('input', (e) => {
+                document.getElementById('contract-months').addEventListener('change', (e) => {
                     this.months = parseInt(e.target.value) || 1;
                     this.render();
                 });
+                document.getElementById('contract-months').className = 'number-input';
                 
                 // Total list price input
-                document.getElementById('total-list-price').addEventListener('input', (e) => {
+                document.getElementById('total-list-price').addEventListener('change', (e) => {
                     const newTotalListValue = parseFloat(e.target.value);
                     if (!isNaN(newTotalListValue)) {
                         this.adjustToTargetListValue(newTotalListValue);
                     }
                 });
+                document.getElementById('total-list-price').className = 'editable-total number-input';
                 
                 // Contract sales value input
-                document.getElementById('contract-sales-value').addEventListener('input', (e) => {
+                document.getElementById('contract-sales-value').addEventListener('change', (e) => {
                     const newTotalSalesValue = parseFloat(e.target.value);
                     if (!isNaN(newTotalSalesValue)) {
                         this.adjustToTargetSalesValue(newTotalSalesValue);
                     }
                 });
+                document.getElementById('contract-sales-value').className = 'summary-input number-input';
             }
             
             loadInitialProducts() {
@@ -677,7 +682,8 @@
                 quantityInput.type = 'number';
                 quantityInput.value = product.quantity;
                 quantityInput.min = '1';
-                quantityInput.addEventListener('input', (e) => {
+                quantityInput.className = 'number-input';
+                quantityInput.addEventListener('change', (e) => {
                     const value = parseInt(e.target.value) || 0;
                     product.updateQuantity(value);
                     this.render();
@@ -692,7 +698,8 @@
                 listPriceInput.value = product.listPrice.toFixed(2);
                 listPriceInput.min = '0';
                 listPriceInput.step = '0.01';
-                listPriceInput.addEventListener('input', (e) => {
+                listPriceInput.className = 'number-input';
+                listPriceInput.addEventListener('change', (e) => {
                     const value = parseFloat(e.target.value) || 0;
                     product.updateListPrice(value);
                     this.render();
@@ -721,7 +728,8 @@
                 discountInput.max = '99.99';
                 discountInput.step = '0.01';
                 discountInput.style.width = '40%';
-                discountInput.addEventListener('input', (e) => {
+                discountInput.className = 'number-input';
+                discountInput.addEventListener('change', (e) => {
                     const value = parseFloat(e.target.value) || 0;
                     product.updateDiscount(value);
                     this.render();
@@ -733,7 +741,8 @@
                 salesPriceInput.min = '0';
                 salesPriceInput.step = '0.01';
                 salesPriceInput.style.width = '40%';
-                salesPriceInput.addEventListener('input', (e) => {
+                salesPriceInput.className = 'number-input';
+                salesPriceInput.addEventListener('change', (e) => {
                     const value = parseFloat(e.target.value) || 0;
                     product.updateSalesPrice(value);
                     this.render();
